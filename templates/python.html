@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Programming Course - Under The Mango Tree</title>
+    <!-- Font Awesome 6.4.0 (CSS and JS, consistent versions) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f3f4f6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            padding: 1.5rem 0;
+        }
+
+        .header h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #bfdbfe;
+        }
+
+        /* Main Content Layout */
+        .main {
+            padding: 2rem 0;
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: 1.5rem;
+            flex-direction: column;
+        }
+
+        @media (min-width: 768px) {
+            .content-wrapper {
+                flex-direction: row;
+            }
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 100%;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            height: fit-content;
+        }
+
+        @media (min-width: 768px) {
+            .sidebar {
+                width: 16rem;
+                position: sticky;
+                top: 1rem;
+            }
+        }
+
+        .sidebar h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            color: #374151;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .sidebar a:hover {
+            background-color: #f3f4f6;
+            color: #2563eb;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            margin-left: 0.5rem;
+        }
+
+        .status-complete {
+            background-color: #10b981;
+        }
+
+        .status-progress {
+            background-color: #3b82f6;
+        }
+
+        .status-not-started {
+            background-color: #9ca3af;
+        }
+
+        /* Video Cards Styles */
+        .video-section {
+            flex: 1;
+        }
+
+        .video-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #1f2937;
+        }
+
+        .video-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .video-card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .video-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-image-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-image {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .video-image-container:hover .video-overlay {
+            opacity: 1;
+        }
+
+        .play-button {
+            background: #dc2626;
+            color: white;
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .play-button:hover {
+            transform: scale(1.1);
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-complete-badge {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .status-progress-badge {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+
+        .status-not-started-badge {
+            background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+        }
+
+        .video-content {
+            padding: 1.5rem;
+        }
+
+        .video-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .video-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .youtube-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #dc2626;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .youtube-link:hover {
+            color: #b91c1c;
+        }
+
+        .expand-button {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .expand-button.collapsed {
+            background-color: #f9fafb;
+            color: #374151;
+        }
+
+        .expand-button.collapsed:hover {
+            background-color: #f3f4f6;
+        }
+
+        .expand-button.expanded {
+            background: linear-gradient(135deg, #eff6ff 0%, #f3e8ff 100%);
+            color: #1d4ed8;
+        }
+
+        .chevron {
+            transition: transform 0.2s ease;
+        }
+
+        .chevron.rotated {
+            transform: rotate(180deg);
+        }
+
+        .details-section {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f9fafb;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        .details-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .details-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .details-section h4 {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .details-section p {
+            color: #6b7280;
+        }
+
+        .resource-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .resource-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #2563eb;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .resource-link:hover {
+            color: #1d4ed8;
+        }
+
+        /* Footer Styles */
+        .footer {
+            background-color: #1f2937;
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .footer-content {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+
+        .footer h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .footer p {
+            color: #9ca3af;
+            margin-top: 0.25rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            color: #9ca3af;
+            font-size: 1.25rem;
+            transition: color 0.2s ease;
+            text-decoration: none;
+        }
+
+        .social-link:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #374151;
+            text-align: center;
+            color: #9ca3af;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .smooth-scroll {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body class="font-sans smooth-scroll">
+    <!-- Header -->
+    <header class="bg-[#1E3D59] text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <i class="fas fa-tree text-2xl mr-2 text-green-400 animate-float"></i>
+                <a href="{{ url_for('home') }}" class="text-xl font-bold tracking-wider hover:text-[#FF6B35] transition duration-300">Under The Mango Tree</a>
+            </div>
+    
+            <!-- Desktop Navigation -->
+            <div class="hidden md:flex items-center space-x-8">
+                <nav class="flex items-center space-x-6">
+                    <a href="{{ url_for('home') }}" class="hover:text-[#FF6B35] transition duration-300 font-medium">Home</a>
+                    <div class="relative group">
+                        <button class="flex items-center hover:text-[#FF6B35] transition duration-300 font-medium">
+                            Learning <i class="fas fa-chevron-down text-xs ml-1"></i>
+                        </button>
+                        <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-xl py-2 z-10 hidden group-hover:block transform opacity-0 group-hover:opacity-100 transition-all duration-300">
+                            <a href="#english" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 hover:text-[#FF6B35] transition duration-200">English Learning</a>
+                            <a href="{{ url_for('python') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 hover:text-[#FF6B35] transition duration-200">Python</a>
+                            <a href="{{ url_for('mlcourse') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 hover:text-[#FF6B35] transition duration-200">Machine Learning</a>
+                        </div>
+                    </div>
+                    <a href="#jobs" class="hover:text-[#FF6B35] transition duration-300 font-medium">Job Portal</a>
+                    <a href="{{ url_for('team') }}" class="hover:text-[#FF6B35] transition duration-300 font-medium">Team</a>
+                </nav>
+                <button class="bg-[#FF6B35] hover:bg-[#e05a2a] text-white px-4 py-2 rounded-lg transition duration-300 shadow-md btn-glow">
+                    Sign In / Register
+                </button>
+            </div>
+    
+            <!-- Mobile menu button -->
+            <div class="md:hidden">
+                <button id="mobile-menu-btn" class="text-white focus:outline-none">
+                    <i class="fas fa-bars text-xl" id="menu-icon"></i>
+                </button>
+            </div>
+        </div>
+    
+        <!-- Mobile Navigation -->
+        <div id="mobile-menu" class="md:hidden bg-[#1E3D59] border-t border-gray-700 hidden">
+            <div class="container mx-auto px-6 py-4">
+                <nav class="flex flex-col space-y-4">
+                    <a href="{{ url_for('home') }}" class="text-white hover:text-[#FF6B35] transition duration-300">Home</a>
+                    <div>
+                        <button id="mobile-submenu-btn" class="text-white hover:text-[#FF6B35] transition duration-300 flex items-center justify-between w-full">
+                            <span>Learning</span>
+                            <i class="fas fa-chevron-down text-xs ml-1" id="submenu-icon"></i>
+                        </button>
+                        <div id="mobile-submenu" class="pl-4 mt-2 space-y-2 hidden">
+                            <a href="#english" class="block text-white/80 hover:text-[#FF6B35] transition duration-300 py-1">English Learning</a>
+                            <a href="{{ url_for('python') }}" class="block text-white/80 hover:text-[#FF6B35] transition duration-300 py-1">Python</a>
+                            <a href="{{ url_for('mlcourse') }}" class="block text-white/80 hover:text-[#FF6B35] transition duration-300 py-1">Machine Learning</a>
+                        </div>
+                    </div>
+                    <a href="#jobs" class="text-white hover:text-[#FF6B35] transition duration-300">Job Portal</a>
+                    <a href="{{ url_for('team') }}" class="text-white hover:text-[#FF6B35] transition duration-300">Team</a>
+                    <button class="bg-[#FF6B35] hover:bg-[#e05a2a] text-white px-4 py-2 rounded-lg transition duration-300 shadow-md w-full">
+                        Sign In / Register
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+    
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <div class="content-wrapper">
+                <!-- Sidebar Navigation -->
+                <aside class="sidebar">
+                    <h2>Python Topics</h2>
+                    <ul>
+                        <li>
+                            <a href="#video-1">
+                                Python Basics & Setup
+                                <span class="status-indicator status-complete"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#video-2">
+                                Variables & Data Types
+                                <span class="status-indicator status-complete"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#video-3">
+                                Control Structures
+                                <span class="status-indicator status-progress"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#video-4">
+                                Functions & Modules
+                                <span class="status-indicator status-not-started"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#video-5">
+                                Object-Oriented Programming
+                                <span class="status-indicator status-not-started"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#video-6">
+                                File Handling & I/O
+                                <span class="status-indicator status-not-started"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#video-7">
+                                Exception Handling
+                                <span class="status-indicator status-not-started"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#video-8">
+                                Libraries & Frameworks
+                                <span class="status-indicator status-not-started"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </aside>
+
+                <!-- Video Section -->
+                <div class="video-section">
+                    <h2>Python Programming Course</h2>
+                    <div class="video-list">
+                        <!-- Video 1: Python Basics -->
+                        <div class="video-card" id="video-1">
+                            <div class="video-image-container">
+                                <img src="https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=800&h=400&fit=crop" alt="Python Basics & Setup" class="video-image">
+                                <div class="video-overlay">
+                                    <button class="play-button">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                </div>
+                                <div class="status-badge status-complete-badge">
+                                    Complete
+                                </div>
+                            </div>
+
+                            <div class="video-content">
+                                <h3 class="video-title">Python Basics & Setup</h3>
+                                
+                                <div class="video-links">
+                                    <a href="https://www.youtube.com/watch?v=kqtD5dpn9C8" target="_blank" rel="noopener noreferrer" class="youtube-link">
+                                        <i class="fab fa-youtube"></i>
+                                        <span>Watch on YouTube</span>
+                                    </a>
+                                </div>
+
+                                <button class="expand-button collapsed" onclick="toggleExpand(1)">
+                                    <span>Details & Resources</span>
+                                    <i class="fas fa-chevron-down chevron" id="chevron-1"></i>
+                                </button>
+
+                                <div class="details-section hidden" id="details-1">
+                                    <div class="details-grid">
+                                        <div>
+                                            <h4>What You'll Learn</h4>
+                                            <p>Installation of Python, IDE setup, understanding Python syntax, writing your first Python program, and understanding the Python interpreter.</p>
+                                        </div>
+                                        <div>
+                                            <h4>Resources</h4>
+                                            <div class="resource-links">
+                                                <a href="#" target="_blank" rel="noopener noreferrer" class="resource-link">
+                                                    <i class="fas fa-code"></i>
+                                                    <span>Sample Code</span>
+                                                </a>
+                                                <a href="#" target="_blank" rel="noopener noreferrer" class="resource-link">
+                                                    <i class="fas fa-download"></i>
+                                                    <span>Python Installer</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Video 2: Variables & Data Types -->
+                        <div class="video-card" id="video-2">
+                            <div class="video-image-container">
+                                <img src="https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=800&h=400&fit=crop" alt="Variables & Data Types" class="video-image">
+                                <div class="video-overlay">
+                                    <button class="play-button">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                </div>
+                                <div class="status-badge status-complete-badge">
+                                    Complete
+                                </div>
+                            </div>
+
+                            <div class="video-content">
+                                <h3 class="video-title">Variables & Data Types</h3>
+                                
+                                <div class="video-links">
+                                    <a href="https://www.youtube.com/watch?v=khKv-8q7YmY" target="_blank" rel="noopener noreferrer" class="youtube-link">
+                                        <i class="fab fa-youtube"></i>
+                                        <span>Watch on YouTube</span>
+                                    </a>
+                                </div>
+
+                                <button class="expand-button collapsed" onclick="toggleExpand(2)">
+                                    <span>Details & Resources</span>
+                                    <i class="fas fa-chevron-down chevron" id="chevron-2"></i>
+                                </button>
+
+                                <div class="details-section hidden" id="details-2">
+                                    <div class="details-grid">
+                                        <div>
+                                            <h4>What You'll Learn</h4>
+                                            <p>Understanding variables, Python data types (strings, integers, floats, booleans), type conversion, and variable naming conventions.</p>
+                                        </div>
+                                        <div>
+                                            <h4>Resources</h4>
+                                            <div class="resource-links">
+                                                <a href="#" target="_blank" rel="noopener noreferrer" class="resource-link">
+                                                    <i class="fas fa-code"></i>
+                                                    <span>Practice Exercises</span>
+                                                </a>
+                                                <a href="#" target="_blank" rel="noopener noreferrer" class="resource-link">
+                                                    <i class="fas fa-file-alt"></i>
+                                                    <span>Data Types Cheat Sheet</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Video 3: Control Structures -->
+                        <div class="video-card" id="video-3">
+                            <div class="video-image-container">
+                                <img src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=800&h=400&fit=crop" alt="Control Structures" class="video-image">
+                                <div class="video-overlay">
+                                    <button class="play-button">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                </div>
+                                <div class="status-badge status-progress-badge">
+                                    In Progress
+                                </div>
+                            </div>
+
+                            <div class="video-content">
+                                <h3 class="video-title">Control Structures</h3>
+                                
+                                <div class="video-links">
+                                    <a href="https://www.youtube.com/watch?v=Zp5MuPOtsSY" target="_blank" rel="noopener noreferrer" class="youtube-link">
+                                        <i class="fab fa-youtube"></i>
+                                        <span>Watch on YouTube</span>
+                                    </a>
+                                </div>
+
+                                <button class="expand-button collapsed" onclick="toggleExpand(3)">
+                                    <span>Details & Resources</span>
+                                    <i class="fas fa-chevron-down chevron" id="chevron-3"></i>
+                                </button>
+
+                                <div class="details-section hidden" id="details-3">
+                                    <div class="details-grid">
+                                        <div>
+                                            <h4>What You'll Learn</h4>
+                                            <p>If-else statements, nested conditions, for loops, while loops, break and continue statements, and loop optimization techniques.</p>
+                                        </div>
+                                        <div>
+                                            <h4>Resources</h4>
+                                            <div class="resource-links">
+                                                <a href="#" target="_blank" rel="noopener noreferrer" class="resource-link">
+                                                    <i class="fas fa-code"></i>
+                                                    <span>Loop Examples</span>
+                                                </a>
+                                                <a href="#" target="_blank" rel="noopener noreferrer" class="resource-link">
+                                                    <i class="fas fa-tasks"></i>
+                                                    <span>Practice Problems</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Video 4: Functions & Modules -->
+                        <div class="video-card" id="video-4">
+                            <div class="video-image-container">
+                                <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=400&fit=crop" alt="Functions & Modules" class="video-image">
+                                <div class="video-overlay">
+                                    <button class="play-button">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                </div>
+                                <div class="status-badge status-not-started-badge">
+                                    Not Started
+                                </div>
+                            </div>
+
+                            <div class="video-content">
+                                <h3 class="video-title">Functions & Modules</h3>
+                                
+                                <div class="video-links">
+                                    <a href="https://www.youtube.com/watch?v=u-OmVr_fT4s" target="_blank" rel="noopener noreferrer" class="youtube-link">
+                                        <i class="fab fa-youtube"></i>
+                                        <span>Watch on YouTube</span>
+                                    </a>
+                                </div>
+
+                                <button class="expand-button collapsed" onclick="toggleExpand(4)">
+                                    <span>Details & Resources</span>
+                                    <i class="fas fa-chevron-down chevron" id="chevron-4"></i>
+                                </button>
+
+                                <div class="details-section hidden" id="details-4">
+                                    <div class="details-grid">
+                                        <div>
+                                            <h4>What You'll Learn</h4>
+                                            <p>Defining functions, parameters and arguments, return statements, scope and lifetime of variables, lambda functions, and importing modules.</p>
+                                        </div>
+                                        <div>
+                                            <h4>Resources</h4>
+                                            <div class="resource-links">
+                                                <a href="#" target="_blank" rel="noopener noreferrer" class="resource-link">
+                                                    <i class="fas fa-code"></i>
+                                                    <span>Function Examples</span>
+                                                </a>
+                                                <a href="#" target="_blank" rel="noopener noreferrer" class="resource-link">
+                                                    <i class="fas fa-book"></i>
+                                                    <span>Module Documentation</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Video 5: Object-Oriented Programming -->
+                        <div class="video-card" id="video-5">
+                            <div class="video-image-container">
+                                <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=400&fit=crop" alt="Object-Oriented Programming" class="video-image">
+                                <div class="video-overlay">
+                                    <button class="play-button">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                </div>
+                                <div class="status-badge status-not-started-badge">
+                                    Not Started
+                                </div>
+                            </div>
+
+                            <div class="video-content">
+                                <h3 class="video-title">Object-Oriented Programming</h3>
+                                
+                                <div class="video-links">
+                                    <a href="https://www.youtube.com/watch?v=qiSCMNBIP2g" target="_blank" rel="noopener noreferrer" class="youtube-link">
+                                        <i class="fab fa-youtube"></i>
+                                        <span>Watch on YouTube</span>
+                                    </a>
+                                </div>
+
+                                <button class="expand-button collapsed" onclick="toggleExpand(5)">
+                                    <span>Details & Resources</span>
+                                    <i class="fas fa-chevron-down chevron" id="chevron-5"></i>
+                                </button>
+
+                                <div class="details-section hidden" id="details-5">
+                                    <div class="details-grid">
+                                        <div>
+                                            <h4>What You'll Learn</h4>
+                                            <p>Classes and objects, constructors, inheritance, polymorphism, encapsulation, method overriding, and advanced OOP concepts.</p>
+                                        </div>
+                                        <div>
+                                            <h4>Resources</h4>
+                                            <div class="resource-links">
+                                                <a href="#" target="_blank" rel="noopener noreferrer" class="resource-link">
+                                                    <i class="fas fa-code"></i>
+                                                    <span>Class Examples</span>
+                                                </a>
+                                                <a href="#" target="_blank" rel="noopener noreferrer" class="resource-link">
+                                                    <i class="fas fa-project-diagram"></i>
+                                                    <span>OOP Diagram</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Video 6: File Handling & I/O
+                        <div class="video-card" id="video-6">
+                            <div class="video-image-container">
+                                <img src="https://images.unsplash.com/photo-1518186233392-c232efbf2373?w=800&h=400&fit=crop" alt="File Handling & I/O" class="video-image">
+                                <div class="video-overlay">
+                                    <button class=" -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <h2>Video Educational Learning</h2>
+                    <p>© 2025 All Rights Reserved</p>
+                </div>
+                <div class="social-links">
+                    <a href="#" class="social-link">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="social-link">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                    <a href="#" class="social-link">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="social-link">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Last updated: May 29, 2025</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        // Global variables
+        let selectedCourse = null;
+        let allCourses = document.querySelectorAll('.course-item');
+
+        // Toggle course content
+        function toggleCourse(courseId) {
+            const content = document.getElementById(`content-${courseId}`);
+            const arrow = document.getElementById(`arrow-${courseId}`);
+            
+            if (selectedCourse === courseId) {
+                // Close current course
+                content.classList.remove('active');
+                arrow.classList.remove('fa-chevron-down');
+                arrow.classList.add('fa-chevron-right');
+                selectedCourse = null;
+            } else {
+                // Close previously opened course
+                if (selectedCourse !== null) {
+                    const prevContent = document.getElementById(`content-${selectedCourse}`);
+                    const prevArrow = document.getElementById(`arrow-${selectedCourse}`);
+                    prevContent.classList.remove('active');
+                    prevArrow.classList.remove('fa-chevron-down');
+                    prevArrow.classList.add('fa-chevron-right');
+                }
+                
+                // Open new course
+                content.classList.add('active');
+                arrow.classList.remove('fa-chevron-right');
+                arrow.classList.add('fa-chevron-down');
+                selectedCourse = courseId;
+            }
+        }
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const clearSearch = document.getElementById('clearSearch');
+        const courseList = document.getElementById('courseList');
+        const noResults = document.getElementById('noResults');
+
+        searchInput.addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase().trim();
+            
+            if (query) {
+                clearSearch.classList.remove('hidden');
+            } else {
+                clearSearch.classList.add('hidden');
+            }
+
+            filterCourses(query);
+        });
+
+        clearSearch.addEventListener('click', function() {
+            searchInput.value = '';
+            clearSearch.classList.add('hidden');
+            filterCourses('');
+        });
+
+        function filterCourses(query) {
+            let visibleCount = 0;
+            
+            allCourses.forEach(course => {
+                const title = course.dataset.title;
+                if (title.includes(query)) {
+                    course.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    course.style.display = 'none';
+                }
+            });
+
+            if (visibleCount === 0 && query) {
+                noResults.classList.remove('hidden');
+                courseList.style.display = 'none';
+            } else {
+                noResults.classList.add('hidden');
+                courseList.style.display = 'flex';
+            }
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add loading animation to buttons
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (!this.classList.contains('loading')) {
+                    this.classList.add('loading');
+                    setTimeout(() => {
+                        this.classList.remove('loading');
+                    }, 1000);
+                }
+            });
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Animate course items on scroll
+        allCourses.forEach((course, index) => {
+            course.style.opacity = '0';
+            course.style.transform = 'translateY(20px)';
+            course.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+            observer.observe(course);
+        });
+
+        // Progress bar animation
+        window.addEventListener('load', function() {
+            const progressBar = document.querySelector('.progress-fill');
+            if (progressBar) {
+                setTimeout(() => {
+                    progressBar.style.transform = 'scaleX(1)';
+                }, 500);
+            }
+        });
+    </script>
+
+</body>
+</html>
