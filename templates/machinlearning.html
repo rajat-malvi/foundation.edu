@@ -427,6 +427,25 @@
         .smooth-scroll {
             scroll-behavior: smooth;
         }
+        /* mobile responcive */
+        /* Smooth transitions for mobile menu */
+        #mobile-menu {
+            transition: all 0.3s ease-in-out;
+        }
+
+        #submenu-icon {
+            transition: transform 0.3s ease;
+        }
+
+        /* Ensure proper spacing for mobile submenu */
+        #mobile-submenu {
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Animation for menu icon */
+        #menu-icon {
+            transition: all 0.3s ease;
+        }
     </style>
 </head>
 <body  class = "font-sans smooth-scroll">
@@ -494,7 +513,6 @@
         </div>
     </header>
     
-
     <!-- Main Content -->
     <main class="main">
         <div class="container">
@@ -666,6 +684,51 @@
                 if (youtubeLink) {
                     window.open(youtubeLink.href, '_blank');
                 }
+            });
+        });
+        
+        // mobile responcive 
+        // Mobile menu toggle functionality
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('menu-icon');
+        const mobileSubmenuBtn = document.getElementById('mobile-submenu-btn');
+        const mobileSubmenu = document.getElementById('mobile-submenu');
+        const submenuIcon = document.getElementById('submenu-icon');
+
+        // Toggle main mobile menu
+        mobileMenuBtn.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
+            
+            // Change hamburger to X icon
+            if (mobileMenu.classList.contains('hidden')) {
+                menuIcon.classList.remove('fa-times');
+                menuIcon.classList.add('fa-bars');
+            } else {
+                menuIcon.classList.remove('fa-bars');
+                menuIcon.classList.add('fa-times');
+            }
+        });
+
+        // Toggle mobile submenu (Learning dropdown)
+        mobileSubmenuBtn.addEventListener('click', function() {
+            mobileSubmenu.classList.toggle('hidden');
+            
+            // Rotate arrow icon
+            if (mobileSubmenu.classList.contains('hidden')) {
+                submenuIcon.style.transform = 'rotate(0deg)';
+            } else {
+                submenuIcon.style.transform = 'rotate(180deg)';
+            }
+        });
+
+        // Close mobile menu when clicking on links
+        const mobileMenuLinks = document.querySelectorAll('#mobile-menu a');
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                mobileMenu.classList.add('hidden');
+                menuIcon.classList.remove('fa-times');
+                menuIcon.classList.add('fa-bars');
             });
         });
     </script>
