@@ -73,76 +73,19 @@
         #menu-icon {
             transition: all 0.3s ease;
         }
+        /* home viewport */
+        #home {
+            min-height: 50vh;
+        }
     </style>
 </head>
 <body class="font-sans smooth-scroll">
     <!-- Header -->
-    <header class="bg-[#1E3D59] text-white shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center">
-                <i class="fas fa-tree text-2xl mr-2 text-green-400 animate-float"></i>
-                <a href="{{ url_for('home') }}" class="text-xl font-bold tracking-wider hover:text-[#FF6B35] transition duration-300">Under The Mango Tree</a>
-            </div>
-    
-            <!-- Desktop Navigation -->
-            <div class="hidden md:flex items-center space-x-8">
-                <nav class="flex items-center space-x-6">
-                    <a href="{{ url_for('home') }}" class="hover:text-[#FF6B35] transition duration-300 font-medium">Home</a>
-                    <div class="relative group">
-                        <button class="flex items-center hover:text-[#FF6B35] transition duration-300 font-medium">
-                            Learning <i class="fas fa-chevron-down text-xs ml-1"></i>
-                        </button>
-                        <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-xl py-2 z-10 hidden group-hover:block transform opacity-0 group-hover:opacity-100 transition-all duration-300">
-                            <a href="#english" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 hover:text-[#FF6B35] transition duration-200">English Learning</a>
-                            <a href="{{ url_for('python') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 hover:text-[#FF6B35] transition duration-200">Python</a>
-                            <a href="{{ url_for('mlcourse') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 hover:text-[#FF6B35] transition duration-200">Machine Learning</a>
-                        </div>
-                    </div>
-                    <a href="#jobs" class="hover:text-[#FF6B35] transition duration-300 font-medium">Job Portal</a>
-                    <a href="{{ url_for('team') }}" class="hover:text-[#FF6B35] transition duration-300 font-medium">Team</a>
-                </nav>
-                <button class="bg-[#FF6B35] hover:bg-[#e05a2a] text-white px-4 py-2 rounded-lg transition duration-300 shadow-md btn-glow">
-                    Sign In / Register
-                </button>
-            </div>
-    
-            <!-- Mobile menu button -->
-            <div class="md:hidden">
-                <button id="mobile-menu-btn" class="text-white focus:outline-none">
-                    <i class="fas fa-bars text-xl" id="menu-icon"></i>
-                </button>
-            </div>
-        </div>
-    
-        <!-- Mobile Navigation -->
-        <div id="mobile-menu" class="md:hidden bg-[#1E3D59] border-t border-gray-700 hidden">
-            <div class="container mx-auto px-6 py-4">
-                <nav class="flex flex-col space-y-4">
-                    <a href="{{ url_for('home') }}" class="text-white hover:text-[#FF6B35] transition duration-300">Home</a>
-                    <div>
-                        <button id="mobile-submenu-btn" class="text-white hover:text-[#FF6B35] transition duration-300 flex items-center justify-between w-full">
-                            <span>Learning</span>
-                            <i class="fas fa-chevron-down text-xs ml-1" id="submenu-icon"></i>
-                        </button>
-                        <div id="mobile-submenu" class="pl-4 mt-2 space-y-2 hidden">
-                            <a href="#english" class="block text-white/80 hover:text-[#FF6B35] transition duration-300 py-1">English Learning</a>
-                            <a href="{{ url_for('python') }}" class="block text-white/80 hover:text-[#FF6B35] transition duration-300 py-1">Python</a>
-                            <a href="{{ url_for('mlcourse') }}" class="block text-white/80 hover:text-[#FF6B35] transition duration-300 py-1">Machine Learning</a>
-                        </div>
-                    </div>
-                    <a href="#jobs" class="text-white hover:text-[#FF6B35] transition duration-300">Job Portal</a>
-                    <a href="{{ url_for('team') }}" class="text-white hover:text-[#FF6B35] transition duration-300">Team</a>
-                    <button class="bg-[#FF6B35] hover:bg-[#e05a2a] text-white px-4 py-2 rounded-lg transition duration-300 shadow-md w-full">
-                        Sign In / Register
-                    </button>
-                </nav>
-            </div>
-        </div>
-    </header>
+    {% include 'header.html' %}
     
 
     <!-- Hero Section -->
-    <section id="home" class="relative bg-hero min-h-screen flex items-center">
+    <section id="home" class="relative bg-hero  flex items-center">
         <div class="container mx-auto px-6 py-20 md:py-32 text-center md:text-left">
             <div class="max-w-2xl">
                 <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight animate-float">
@@ -410,72 +353,32 @@
     </section>
 
     <!-- CTA Section -->
-    <section class="py-24 bg-gradient-to-r from-[#1E3D59] to-[#0d2b45] text-white relative overflow-hidden">
-        <div class="absolute inset-0 bg-black opacity-20"></div>
-        <div class="container mx-auto px-6 text-center relative z-10">
-            <h2 class="text-4xl md:text-5xl font-bold mb-8">Ready to Transform Your Career?</h2>
-            <p class="text-xl mb-12 max-w-3xl mx-auto leading-relaxed">
-                Join thousands of students who have already taken the first step towards a brighter future.
+    <section 
+        class="py-24 relative overflow-hidden bg-cover bg-center bg-no-repeat" 
+        style="background-image: url('https://www.shutterstock.com/image-photo/person-leads-finger-on-lines-260nw-1864366570.jpg'); filter: grayscale(40%);">
+
+        <!-- Content -->
+        <div class="container mx-auto px-6 text-center relative z-10 text-black color-white">
+            <h2 class="text-4xl md:text-5xl font-bold mb-8 text-white">Ready to Transform Your Career?</h2>
+            <p class="text-xl mb-12 max-w-3xl mx-auto leading-relaxed text-white">
+            Join thousands of students who have already taken the first step towards a brighter future.
             </p>
             <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
-                <button class="bg-[#FF6B35] hover:bg-[#e05a2a] text-white px-10 py-4 rounded-lg font-medium shadow-lg transition duration-300 hover-scale btn-glow">
-                    <i class="fas fa-user-plus mr-2"></i> Register Now
-                </button>
-                <button class="bg-transparent border-2 border-white hover:bg-white hover:text-[#1E3D59] text-white px-10 py-4 rounded-lg font-medium transition duration-300 hover-scale">
-                    <i class="fas fa-info-circle mr-2"></i> Learn More
-                </button>
+            <!-- Register Button -->
+            <button class="bg-[#FF6B35] hover:bg-[#e05a2a] text-white px-10 py-4 rounded-lg font-medium shadow-lg transition duration-300">
+                <i class="fas fa-user-plus mr-2"></i> Register Now
+            </button>
+            <!-- Learn More Button -->
+            <button class="bg-white text-black border-2 border-white hover:bg-gray-100 px-10 py-4 rounded-lg font-medium transition duration-300">
+                <i class="fas fa-info-circle mr-2"></i> Learn More
+            </button>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-[#0d2b45] text-white pt-20 pb-8">
-        <div class="container mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
-                <!-- Brand -->
-                <div>
-                    <div class="flex items-center mb-6">
-                        <i class="fas fa-tree text-2xl mr-2 text-green-400"></i>
-                        <h3 class="text-xl font-bold">Under The Mango Tree</h3>
-                    </div>
-                    <p class="text-gray-300 mb-6 leading-relaxed">
-                        Empowering students through quality education and career opportunities in a supportive, university-style environment.
-                    </p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="w-12 h-12 rounded-full bg-[#1E3D59] flex items-center justify-center hover:bg-[#FF6B35] transition duration-300 hover-scale">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="w-12 h-12 rounded-full bg-[#1E3D59] flex items-center justify-center hover:bg-[#FF6B35] transition duration-300 hover-scale">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="w-12 h-12 rounded-full bg-[#1E3D59] flex items-center justify-center hover:bg-[#FF6B35] transition duration-300 hover-scale">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="w-12 h-12 rounded-full bg-[#1E3D59] flex items-center justify-center hover:bg-[#FF6B35] transition duration-300 hover-scale">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
-                    </div>
-                </div>
-                
-                <!-- Quick Links -->
-                <div>
-                    <h3 class="text-lg font-bold mb-6 border-b border-gray-700 pb-2">Quick Links</h3>
-                    <ul class="space-y-3">
-                        <li><a href="#home" class="text-gray-300 hover:text-[#FF6B35] transition duration-300">Home</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-[#FF6B35] transition duration-300">Learning Hub</a></li>
-                        <li><a href="#jobs" class="text-gray-300 hover:text-[#FF6B35] transition duration-300">Job Portal</a></li>
-                        <li><a href="#team" class="text-gray-300 hover:text-[#FF6B35] transition duration-300">Our Team</a></li>
-                    </ul>
-                </div>
-                
-                <!-- Learning Resources -->
-                <!-- <div>
-                    <h3 class="text- -->
-            </div>
-        </div>
-    </footer>
+    {% include 'footer.html' %}
 
-
+   
     <script>
         // Mobile menu toggle functionality
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
@@ -521,6 +424,26 @@
             });
         });
     </script>
+
+    <!-- script for desktop nev bar -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggleBtn = document.getElementById('learningToggle');
+            const menu = document.getElementById('learningMenu');
+    
+            toggleBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                menu.classList.toggle('hidden');
+            });
+    
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function (e) {
+                if (!menu.contains(e.target) && !toggleBtn.contains(e.target)) {
+                    menu.classList.add('hidden');
+                }
+            });
+        });
+    </script>    
 
 </body>
 </html>

@@ -1,103 +1,156 @@
-from flask import Flask, render_template,request
-
+from flask import Flask, render_template,request,jsonify
+import math
+from ml_course import ML_VIDEO_DATA
+from python_course import PY_VIDEO_DATA
 app = Flask(__name__)
 
 # machine learning
 # Video data that will be passed to the template
-@app.route("/", methods=['GET'])  # Add @ before route
+@app.route("/", methods=['GET'])
 def home():
     return render_template("home.html")
 
+
 @app.route("/python",methods=["GET"])
 def python():
-    return render_template("python.html")
+    # Sidebar navigation data
+    SIDEBAR_TOPICS = [
+        {'name': 'Python Basics & Setup', 'video_id': 1, 'status': 'complete'},
+        {'name': 'Variables & Data Types', 'video_id': 2, 'status': 'complete'},
+        {'name': 'Control Structures', 'video_id': 3, 'status': 'progress'},
+        {'name': 'Functions & Modules', 'video_id': 4, 'status': 'not-started'},
+        {'name': 'Object-Oriented Programming', 'video_id': 5, 'status': 'not-started'},
+        {'name': 'File Handling & I/O', 'video_id': 6, 'status': 'not-started'},
+        {'name': 'Exception Handling', 'video_id': 7, 'status': 'not-started'},
+        {'name': 'Libraries & Frameworks', 'video_id': 8, 'status': 'not-started'},
+        {'name': 'Web Development with Flask', 'video_id': 9, 'status': 'not-started'},
+        {'name': 'Data Science with Python', 'video_id': 10, 'status': 'not-started'},
+        {'name': 'API Development', 'video_id': 11, 'status': 'not-started'},
+        {'name': 'Testing in Python', 'video_id': 12, 'status': 'not-started'},
+    ]
+    page = request.args.get('page', 1, type=int)
+    per_page = 5  # Number of videos per page
+    
+    # Calculate pagination
+    total_videos = len(PY_VIDEO_DATA)
+    total_pages = math.ceil(total_videos / per_page)
+    start_index = (page - 1) * per_page
+    end_index = start_index + per_page
+    
+    # Get videos for current page
+    videos = PY_VIDEO_DATA[start_index:end_index]
+    
+    # Pagination info
+    pagination = {
+        'current_page': page,
+        'total_pages': total_pages,
+        'has_prev': page > 1,
+        'has_next': page < total_pages,
+        'prev_page': page - 1 if page > 1 else None,
+        'next_page': page + 1 if page < total_pages else None,
+        'total_videos': total_videos
+    }
+    
+    return render_template('python.html', 
+                           videos=videos, 
+                           sidebar_topics=SIDEBAR_TOPICS,
+                           pagination=pagination)
+    # return render_template("python.html")
+
+@app.route('/load_more_videos')
+def load_more_videos():
+    page = request.args.get('page', 1, type=int)
+    per_page = 3
+    
+    # Calculate pagination
+    total_videos = len(PY_VIDEO_DATA)
+    total_pages = math.ceil(total_videos / per_page)
+    start_index = (page - 1) * per_page
+    end_index = start_index + per_page
+    
+    # Get videos for current page
+    videos = PY_VIDEO_DATA[start_index:end_index]
+    
+    # Pagination info
+    pagination = {
+        'current_page': page,
+        'total_pages': total_pages,
+        'has_prev': page > 1,
+        'has_next': page < total_pages,
+        'prev_page': page - 1 if page > 1 else None,
+        'next_page': page + 1 if page < total_pages else None,
+        'total_videos': total_videos
+    }
+    
+    return jsonify({
+        'videos': videos,
+        'pagination': pagination
+    })
 
 @app.route("/machinlearning",methods = ['GET'])
 def mlcourse():
-    videos = [
-        {
-            "id": 1,
-            "title": "Introduction to Machine Learning",
-            "status": "Complete",
-            "youtubeLink": "https://youtube.com/watch?v=abc123",
-            "reference": "Stanford CS229 Course Materials",
-            "code": "https://github.com/example/machine-learning-intro",
-            "dataset": "https://kaggle.com/datasets/ml-intro",
-            "imageUrl": "https://readdy.ai/api/search-image?query=modern%20machine%20learning%20concept%20visualization%20with%20neural%20networks%20and%20data%20patterns%2C%20clean%20minimalist%20design%20with%20blue%20gradient%20background%2C%20professional%20educational%20thumbnail&width=640&height=360&seq=1&orientation=landscape"
-        },
-        {
-            "id": 2,
-            "title": "Deep Learning Fundamentals",
-            "status": "In Progress",
-            "youtubeLink": "https://youtube.com/watch?v=def456",
-            "reference": "Deep Learning Book by Ian Goodfellow",
-            "code": "https://github.com/example/deep-learning-basics",
-            "dataset": "https://kaggle.com/datasets/deep-learning",
-            "imageUrl": "https://readdy.ai/api/search-image?query=deep%20learning%20neural%20network%20visualization%20with%20abstract%20digital%20connections%20and%20nodes%2C%20professional%20educational%20content%20with%20dark%20blue%20gradient%20background%2C%20high%20quality%20thumbnail&width=640&height=360&seq=2&orientation=landscape"
-        },
-        {
-            "id": 3,
-            "title": "Natural Language Processing",
-            "status": "Complete",
-            "youtubeLink": "https://youtube.com/watch?v=ghi789",
-            "reference": "NLP Course by Jurafsky & Manning",
-            "code": "https://github.com/example/nlp-examples",
-            "dataset": "https://kaggle.com/datasets/nlp-corpus",
-            "imageUrl": "https://readdy.ai/api/search-image?query=natural%20language%20processing%20concept%20with%20text%20analysis%20visualization%2C%20word%20embeddings%20and%20language%20models%20represented%20with%20clean%20modern%20design%2C%20educational%20thumbnail%20with%20blue%20background&width=640&height=360&seq=3&orientation=landscape"
-        },
-        {
-            "id": 4,
-            "title": "Computer Vision Techniques",
-            "status": "In Progress",
-            "youtubeLink": "https://youtube.com/watch?v=jkl012",
-            "reference": "Computer Vision: Algorithms and Applications",
-            "code": "https://github.com/example/computer-vision",
-            "dataset": "https://kaggle.com/datasets/vision-dataset",
-            "imageUrl": "https://readdy.ai/api/search-image?query=computer%20vision%20technology%20concept%20with%20image%20recognition%20and%20object%20detection%20visualization%2C%20professional%20educational%20content%20with%20clean%20modern%20design%20and%20gradient%20background&width=640&height=360&seq=4&orientation=landscape"
-        },
-        {
-            "id": 5,
-            "title": "Reinforcement Learning",
-            "status": "Complete",
-            "youtubeLink": "https://youtube.com/watch?v=mno345",
-            "reference": "Reinforcement Learning: An Introduction by Sutton & Barto",
-            "code": "https://github.com/example/reinforcement-learning",
-            "dataset": "https://kaggle.com/datasets/rl-environments",
-            "imageUrl": "https://readdy.ai/api/search-image?query=reinforcement%20learning%20concept%20with%20agent%20environment%20interaction%20visualization%2C%20game%20theory%20and%20decision%20making%20representation%20with%20professional%20educational%20style%20and%20clean%20background&width=640&height=360&seq=5&orientation=landscape"
-        },
-        {
-            "id": 6,
-            "title": "Data Visualization Techniques",
-            "status": "In Progress",
-            "youtubeLink": "https://youtube.com/watch?v=pqr678",
-            "reference": "The Visual Display of Quantitative Information",
-            "code": "https://github.com/example/data-viz",
-            "dataset": "https://kaggle.com/datasets/visualization-examples",
-            "imageUrl": "https://readdy.ai/api/search-image?query=data%20visualization%20techniques%20with%20colorful%20charts%2C%20graphs%20and%20infographics%2C%20modern%20clean%20design%20showing%20information%20display%20methods%2C%20educational%20content%20with%20professional%20look&width=640&height=360&seq=6&orientation=landscape"
-        },
-        {
-            "id": 7,
-            "title": "Time Series Analysis",
-            "status": "Complete",
-            "youtubeLink": "https://youtube.com/watch?v=stu901",
-            "reference": "Time Series Analysis by Box & Jenkins",
-            "code": "https://github.com/example/time-series",
-            "dataset": "https://kaggle.com/datasets/time-series-data",
-            "imageUrl": "https://readdy.ai/api/search-image?query=time%20series%20analysis%20visualization%20with%20trend%20lines%20and%20forecasting%20graphs%2C%20stock%20market%20or%20weather%20data%20representation%2C%20professional%20educational%20content%20with%20clean%20modern%20design&width=640&height=360&seq=7&orientation=landscape"
-        },
-        {
-            "id": 8,
-            "title": "Generative Adversarial Networks",
-            "status": "In Progress",
-            "youtubeLink": "https://youtube.com/watch?v=vwx234",
-            "reference": "GAN Papers by Ian Goodfellow",
-            "code": "https://github.com/example/gan-examples",
-            "dataset": "https://kaggle.com/datasets/gan-training",
-            "imageUrl": "https://readdy.ai/api/search-image?query=generative%20adversarial%20networks%20concept%20visualization%20showing%20generator%20and%20discriminator%20architecture%2C%20AI%20art%20creation%20process%2C%20professional%20educational%20thumbnail%20with%20modern%20design&width=640&height=360&seq=8&orientation=landscape"
-        }
+    # Sidebar navigation data for ML course
+    ML_SIDEBAR_TOPICS = [
+        {'name': 'Introduction to ML', 'video_id': 1, 'status': 'complete'},
+        {'name': 'Supervised Learning', 'video_id': 2, 'status': 'complete'},
+        {'name': 'Unsupervised Learning', 'video_id': 3, 'status': 'progress'},
+        {'name': 'Neural Networks', 'video_id': 4, 'status': 'not-started'},
+        {'name': 'Deep Learning', 'video_id': 5, 'status': 'not-started'},
+        {'name': 'Reinforcement Learning', 'video_id': 6, 'status': 'not-started'},
+        {'name': 'Model Evaluation', 'video_id': 7, 'status': 'not-started'},
+        {'name': 'Feature Engineering', 'video_id': 8, 'status': 'not-started'},
     ]
-    return render_template('machinlearning.html', videos=videos)
 
+    page = request.args.get('page', 1, type=int)
+    per_page = 5  # Videos per page
+
+    total_videos = len(ML_VIDEO_DATA)
+    total_pages = math.ceil(total_videos / per_page)
+    start_index = (page - 1) * per_page
+    end_index = start_index + per_page
+    videos = ML_VIDEO_DATA[start_index:end_index]
+
+    pagination = {
+        'current_page': page,
+        'total_pages': total_pages,
+        'has_prev': page > 1,
+        'has_next': page < total_pages,
+        'prev_page': page - 1 if page > 1 else None,
+        'next_page': page + 1 if page < total_pages else None,
+        'total_videos': total_videos
+    }
+
+    return render_template('machinlearning.html',
+                           videos=videos,
+                           sidebar_topics=ML_SIDEBAR_TOPICS,
+                           pagination=pagination)
+
+# Optional: API endpoint for loading more videos asynchronously
+@app.route('/load_more_ml_videos')
+def load_more_ml_videos():
+    page = request.args.get('page', 1, type=int)
+    per_page = 5  # Or whatever number for load more
+
+    total_videos = len(ML_VIDEO_DATA)
+    total_pages = math.ceil(total_videos / per_page)
+    start_index = (page - 1) * per_page
+    end_index = start_index + per_page
+    videos = ML_VIDEO_DATA[start_index:end_index]
+
+    pagination = {
+        'current_page': page,
+        'total_pages': total_pages,
+        'has_prev': page > 1,
+        'has_next': page < total_pages,
+        'prev_page': page - 1 if page > 1 else None,
+        'next_page': page + 1 if page < total_pages else None,
+        'total_videos': total_videos
+    }
+
+    return jsonify({
+        'videos': videos,
+        'pagination': pagination
+    })
 
 @app.route("/team",methods=['GET'])
 def team():
@@ -136,7 +189,7 @@ def team():
             'role': "Associate Director of Data Science, Plaksha University",
             'bio': "Dr. Anish is a seasoned Data Science professional with 20+ years in industry and academia. He excels in leading digital transformations and has deep expertise in Machine Learning, Deep Learning, and Generative AI, dedicated to advancing Data Science education.",
             'linkedIn': "#",
-            'profileUrl': "https://media.licdn.com/dms/image/v2/D5603AQEr1RmREBUOkQ/profile-displayphoto-shrink_200_200/B56ZPtU50PH0AY-/0/1734853501970?e=1753920000&v=beta&t=vRyh1zQlDZs3IHC_F-XXnKtwBowky9-KXgBlaWu_KyY",
+            'profileUrl': "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgOaSSjkAwM3adr-2VYhVKuv1sgRJ9Z4T4Ew&s",
             'gender': 'male'
         },
         {
@@ -210,4 +263,4 @@ def team():
                          support_pillars=support_pillars)
 
 if __name__ == "__main__":
-    app.run(port=3000,debug=True)
+    app.run(debug=True)

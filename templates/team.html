@@ -148,7 +148,38 @@
         #menu-icon {
             transition: all 0.3s ease;
         }
+        /* profile image  */
+        .profile-container {
+            width: 128px;
+            height: 128px;
+            border-radius: 100%;
+            overflow: hidden;
+            /* border: 4px solid #e5e7eb; Tailwind's gray-200 */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            
+        }
+        .profile-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
     </style>
+    <style>
+        .clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            max-height: 4.5em; /* Approx height for 3 lines */
+        }
+        
+        .bio-text.expanded {
+            -webkit-line-clamp: unset;
+            max-height: none;
+        }
+    </style>
+        
 </head>
 <body class="min-h-screen flex flex-col">
     
@@ -249,19 +280,31 @@
                         <!-- Front of card -->
                         <div class="card-front bg-white p-6 rounded-xl shadow-lg flex flex-col items-center text-center transition-transform duration-300 hover:scale-105">
                             <!-- Profile Image -->
-                            <div class="w-28 h-36 rounded-full overflow-hidden border-4 border-gray-200 shadow-md mb-6">
+                            <!-- <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200 shadow-md mb-6">
                                 <img src="{{ member.profileUrl }}"
                                      alt="{{ member.name }}"
                                      class="w-full h-full object-cover object-center">
+                            </div>                                   -->
+
+                            <div class="profile-container">
+                                <img src="{{ member.profileUrl }}" alt="{{ member.name }}">
                             </div>
-                                                          
 
                             <!-- Name and Role -->
                             <h3 class="text-2xl font-semibold text-[#1E3D59] mb-1">{{ member.name }}</h3>
                             <p class="text-[#FF6B35] font-medium mb-3 tracking-wide uppercase text-sm">{{ member.role }}</p>
 
                             <!-- Bio -->
-                            <p class="text-gray-600 mb-6 px-2 text-sm">{{ member.bio }}</p>
+                            <div class="bio-wrapper text-gray-600 mb-6 px-2 text-sm relative">
+                                <p id="bio-{{ loop.index }}" class="bio-text clamp-3 transition-all duration-300 ease-in-out">
+                                    {{ member.bio }}
+                                </p>
+                                <button type="button" id="bio-toggle-{{ loop.index }}" class="text-blue-600 text-xs mt-1 hover:underline"
+                                        onclick="event.stopPropagation(); toggleBio({{ loop.index }})">
+                                    Read more
+                                </button>
+                            </div>
+                            
 
                             <!-- Social and Profile -->
                             <div class="flex items-center justify-center space-x-4 mt-auto">
@@ -681,4 +724,34 @@
             });
         });
     </script>
+    <!-- script for desktop nev bar -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggleBtn = document.getElementById('learningToggle');
+            const menu = document.getElementById('learningMenu');
+    
+            toggleBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                menu.classList.toggle('hidden');
+            });
+    
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function (e) {
+                if (!menu.contains(e.target) && !toggleBtn.contains(e.target)) {
+                    menu.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+    <script>
+        function toggleBio(index) {
+            const bio = document.getElementById('bio-' + index);
+            const btn = document.getElementById('bio-toggle-' + index);
+        
+            bio.classList.toggle('expanded');
+            btn.textContent = bio.classList.contains('expanded') ? 'Read less' : 'Read more';
+        }
+    </script>
+        
 </body>
+</html>
