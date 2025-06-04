@@ -79,7 +79,7 @@
 
         @media (min-width: 768px) {
             .sidebar {
-                width: 16rem;
+                width: 20rem;
                 position: sticky;
                 top: 1rem;
             }
@@ -558,7 +558,123 @@
                 order: -1;
             }
         }
+        /* Add this CSS to your existing styles */
+        /* .status-not-started-badge {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        } */
+
+        /* Add this CSS to your existing styles for active topic highlighting */
+        .sidebar a.active-topic {
+            background: linear-gradient(135deg, #eff6ff 0%, #f3e8ff 100%);
+            color: #1d4ed8;
+            font-weight: 600;
+            border-left: 4px solid #3b82f6;
+            padding-left: calc(0.75rem - 4px);
+        }
+
+        .sidebar a.active-topic:hover {
+            background: linear-gradient(135deg, #dbeafe 0%, #e9d5ff 100%);
+            color: #1d4ed8;
+        }
+
+    /* Topic link animations */
+    .sidebar a.topic-link {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .sidebar a.topic-link::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+        transition: left 0.5s;
+    }
+
+    .sidebar a.topic-link:hover::before {
+        left: 100%;
+    }
+
+    /* Video container loading state */
+    #video-container {
+        transition: opacity 0.3s ease;
+    }
+
+    /* Responsive improvements for topic switching */
+    @media (max-width: 768px) {
+        .sidebar a.active-topic {
+            border-left: none;
+            border-top: 3px solid #3b82f6;
+            padding-left: 0.75rem;
+            padding-top: calc(0.75rem - 3px);
+        }
+    }
+    .video-iframe-container {
+        position: relative;
+        width: 100%;
+        padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+        height: 0;
+        overflow: hidden;
+        margin-bottom: 1rem;
+        background: #000;
+    }
+
+    .video-iframe-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+    }
+
+    .materials-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .materials-list li {
+        margin-bottom: 0.5rem;
+    }
+
+    .materials-list a {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #3b82f6;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .materials-list a:hover {
+        color: #2563eb;
+    }
+
+    .topic-link {
+        cursor: pointer;
+    }
+
+    .topic-link.active-topic {
+        background-color: #e5e7eb;
+        font-weight: 600;
+    }
+
+    .video-image-container iframe {
+            border-radius: 0.75rem 0.75rem 0 0; /* Match the card's border radius */
+        }
+        
+    /* Ensure iframe is responsive */
+    @media (max-width: 768px) {
+        .video-image-container iframe {
+            height: 200px; /* Smaller height on mobile */
+        }
+    }
     </style>
+
 
 </head>
 <body  class = "font-sans smooth-scroll">
@@ -570,14 +686,17 @@
         <div class="container">
             <div class="content-wrapper">
                 <!-- Sidebar Navigation -->
+                <!-- Updated Sidebar Navigation for ML page -->
                 <aside class="sidebar">
                     <h2>Topics</h2>
                     <ul>
-                        {% for video in videos %}
+                        {% for topic in sidebar_topics %}
                         <li>
-                            <a href="#video-{{ video.id }}">
-                                {{ video.title }}
-                                <span class="status-indicator {% if video.status == 'Complete' %}status-complete{% else %}status-progress{% endif %}"></span>
+                            <a href="?topic={{ topic.name|urlencode }}" class="topic-link {% if topic.name == selected_topic %}active-topic{% endif %}">
+                                <b> {{ topic.name }}</b>
+                                {% if topic.name == selected_topic %}
+                                <span class="status-indicator status-progress"></span>
+                                {% endif %}
                             </a>
                         </li>
                         {% endfor %}
@@ -586,22 +705,25 @@
 
                 <!-- Video Section -->
                 <div class="video-section">
-                    <h2>Machine Learning & Data Science</h2>
-                    <div class="video-list">
+                    <h2>{{ selected_topic }}</h2>
+                    {% if videos %}
+                    <div class="video-list" id="video-container">
                         {% for video in videos %}
                         <div class="video-card" id="video-{{ video.id }}">
-                            <div class="video-image-container">
-                                <img src="{{ video.imageUrl }}" alt="{{ video.title }}" class="video-image">
-                                <div class="video-overlay">
-                                    <button class="play-button">
-                                        <i class="fas fa-play"></i>
-                                    </button>
-                                </div>
-                                <div class="status-badge {% if video.status == 'Complete' %}status-complete-badge{% else %}status-progress-badge{% endif %}">
-                                    {{ video.status }}
+                            <div class="video-iframe-container">
+                                {% set youtube_id = video.youtubeLink.split('/')[-1] if '/' in video.youtubeLink else video.youtubeLink.split('=')[-1] %}
+                                <iframe 
+                                    width="100%" 
+                                    height="300"
+                                    src="https://www.youtube.com/embed/{{ youtube_id }}?controls=1" 
+                                    frameborder="0" 
+                                    allowfullscreen>
+                                </iframe>
+                                <div class="status-badge {% if video.status == 'Complete' %}status-complete-badge{% elif video.status == 'progress' %}status-progress-badge{% else %}status-not-started-badge{% endif %}">
+                                    {% if video.status == 'Complete' %}Complete{% elif video.status == 'progress' %}In Progress{% else %}Not Started{% endif %}
                                 </div>
                             </div>
-
+                
                             <div class="video-content">
                                 <h3 class="video-title">{{ video.title }}</h3>
                                 
@@ -611,29 +733,33 @@
                                         <span>Watch on YouTube</span>
                                     </a>
                                 </div>
-
+                
                                 <button class="expand-button collapsed" onclick="toggleExpand({{ video.id }})">
-                                    <span>Details & Resources</span>
+                                    <span>Resources & Links</span>
                                     <i class="fas fa-chevron-down chevron" id="chevron-{{ video.id }}"></i>
                                 </button>
-
+                
                                 <div class="details-section hidden" id="details-{{ video.id }}">
                                     <div class="details-grid">
                                         <div>
                                             <h4>Reference</h4>
-                                            <p>{{ video.reference }}</p>
+                                            <p>{{ video.reference if video.reference else 'No reference available' }}</p>
                                         </div>
                                         <div>
                                             <h4>Resources</h4>
                                             <div class="resource-links">
+                                                {% if video.code %}
                                                 <a href="{{ video.code }}" target="_blank" rel="noopener noreferrer" class="resource-link">
                                                     <i class="fas fa-code"></i>
                                                     <span>Code Repository</span>
                                                 </a>
+                                                {% endif %}
+                                                {% if video.dataset %}
                                                 <a href="{{ video.dataset }}" target="_blank" rel="noopener noreferrer" class="resource-link">
                                                     <i class="fas fa-database"></i>
                                                     <span>Dataset</span>
                                                 </a>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>
@@ -642,17 +768,16 @@
                         </div>
                         {% endfor %}
                     </div>
-
-
-                    <!-- Pagination Section - Add this after video-list div -->
+                
+                    <!-- Updated pagination to include topic parameter -->
                     <div class="pagination-container">
                         <div class="pagination-info">
-                            <p>Showing {{ (pagination.current_page - 1) * 3 + 1 }} to {{ (pagination.current_page - 1) * 3 + videos|length }} of {{ pagination.total_videos }} videos</p>
+                            <p>Showing {{ (pagination.current_page - 1) * 5 + 1 }} to {{ (pagination.current_page - 1) * 5 + videos|length }} of {{ pagination.total_videos }} videos</p>
                         </div>
                         
                         <div class="pagination-controls">
                             {% if pagination.has_prev %}
-                            <a href="?page={{ pagination.prev_page }}" class="pagination-btn prev-btn">
+                            <a href="?topic={{ selected_topic|urlencode }}&page={{ pagination.prev_page }}" class="pagination-btn prev-btn">
                                 <i class="fas fa-chevron-left"></i>
                                 Previous
                             </a>
@@ -663,140 +788,34 @@
                                     {% if page_num == pagination.current_page %}
                                     <span class="page-number active">{{ page_num }}</span>
                                     {% else %}
-                                    <a href="?page={{ page_num }}" class="page-number">{{ page_num }}</a>
+                                    <a href="?topic={{ selected_topic|urlencode }}&page={{ page_num }}" class="page-number">{{ page_num }}</a>
                                     {% endif %}
                                 {% endfor %}
                             </div>
                             
                             {% if pagination.has_next %}
-                            <a href="?page={{ pagination.next_page }}" class="pagination-btn next-btn">
+                            <a href="?topic={{ selected_topic|urlencode }}&page={{ pagination.next_page }}" class="pagination-btn next-btn">
                                 Next
                                 <i class="fas fa-chevron-right"></i>
                             </a>
                             {% endif %}
                         </div>
                     </div>
-
+                    {% else %}
+                    <div class="no-videos-message">
+                        <p class="text-gray-500 text-center py-8">No videos available for this topic yet.</p>
+                    </div>
+                    {% endif %}
                 </div>
+
             </div>
         </div>
     </main>
 
     <!-- Footer -->
-    {% include 'footer.html' %}
-
-    <script>
-        let expandedVideo = null;
-
-        function toggleExpand(videoId) {
-            const detailsSection = document.getElementById(`details-${videoId}`);
-            const chevron = document.getElementById(`chevron-${videoId}`);
-            const button = detailsSection.previousElementSibling;
-
-            if (expandedVideo === videoId) {
-                // Collapse current video
-                detailsSection.classList.add('hidden');
-                chevron.classList.remove('rotated');
-                button.classList.remove('expanded');
-                button.classList.add('collapsed');
-                expandedVideo = null;
-            } else {
-                // Collapse previously expanded video if any
-                if (expandedVideo !== null) {
-                    const prevDetails = document.getElementById(`details-${expandedVideo}`);
-                    const prevChevron = document.getElementById(`chevron-${expandedVideo}`);
-                    const prevButton = prevDetails.previousElementSibling;
-                    
-                    prevDetails.classList.add('hidden');
-                    prevChevron.classList.remove('rotated');
-                    prevButton.classList.remove('expanded');
-                    prevButton.classList.add('collapsed');
-                }
-
-                // Expand current video
-                detailsSection.classList.remove('hidden');
-                chevron.classList.add('rotated');
-                button.classList.remove('collapsed');
-                button.classList.add('expanded');
-                expandedVideo = videoId;
-            }
-        }
-
-        // Smooth scrolling for sidebar links
-        document.querySelectorAll('.sidebar a').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href');
-                const targetElement = document.querySelector(targetId);
-                if (targetElement) {
-                    targetElement.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Play button functionality
-        document.querySelectorAll('.play-button').forEach(button => {
-            button.addEventListener('click', function() {
-                const videoCard = this.closest('.video-card');
-                const youtubeLink = videoCard.querySelector('.youtube-link');
-                if (youtubeLink) {
-                    window.open(youtubeLink.href, '_blank');
-                }
-            });
-        });
-        
-        // mobile responcive 
-        // Mobile menu toggle functionality
-        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const menuIcon = document.getElementById('menu-icon');
-        const mobileSubmenuBtn = document.getElementById('mobile-submenu-btn');
-        const mobileSubmenu = document.getElementById('mobile-submenu');
-        const submenuIcon = document.getElementById('submenu-icon');
-
-        // Toggle main mobile menu
-        mobileMenuBtn.addEventListener('click', function() {
-            mobileMenu.classList.toggle('hidden');
-            
-            // Change hamburger to X icon
-            if (mobileMenu.classList.contains('hidden')) {
-                menuIcon.classList.remove('fa-times');
-                menuIcon.classList.add('fa-bars');
-            } else {
-                menuIcon.classList.remove('fa-bars');
-                menuIcon.classList.add('fa-times');
-            }
-        });
-
-        // Toggle mobile submenu (Learning dropdown)
-        mobileSubmenuBtn.addEventListener('click', function() {
-            mobileSubmenu.classList.toggle('hidden');
-            
-            // Rotate arrow icon
-            if (mobileSubmenu.classList.contains('hidden')) {
-                submenuIcon.style.transform = 'rotate(0deg)';
-            } else {
-                submenuIcon.style.transform = 'rotate(180deg)';
-            }
-        });
-
-        // Close mobile menu when clicking on links
-        const mobileMenuLinks = document.querySelectorAll('#mobile-menu a');
-        mobileMenuLinks.forEach(link => {
-            link.addEventListener('click', function() {
-                mobileMenu.classList.add('hidden');
-                menuIcon.classList.remove('fa-times');
-                menuIcon.classList.add('fa-bars');
-            });
-        });
-    </script>
+    {% include 'footer.html' %}        
 
     
-        
-
     <!-- script for desktop nev bar -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -817,27 +836,27 @@
         });
     </script>
 
-    <script>
+    <!-- <script>
         // Complete AJAX Pagination JavaScript
-        function toggleExpand(videoId) {
-            const detailsSection = document.getElementById(`details-${videoId}`);
-            const chevron = document.getElementById(`chevron-${videoId}`);
-            const button = chevron.closest('.expand-button');
+        // function toggleExpand(videoId) {
+        //     const detailsSection = document.getElementById(`details-${videoId}`);
+        //     const chevron = document.getElementById(`chevron-${videoId}`);
+        //     const button = chevron.closest('.expand-button');
             
-            if (detailsSection.classList.contains('hidden')) {
-                // Expand
-                detailsSection.classList.remove('hidden');
-                chevron.classList.add('rotated');
-                button.classList.remove('collapsed');
-                button.classList.add('expanded');
-            } else {
-                // Collapse
-                detailsSection.classList.add('hidden');
-                chevron.classList.remove('rotated');
-                button.classList.remove('expanded');
-                button.classList.add('collapsed');
-            }
-        }
+        //     if (detailsSection.classList.contains('hidden')) {
+        //         // Expand
+        //         detailsSection.classList.remove('hidden');
+        //         chevron.classList.add('rotated');
+        //         button.classList.remove('collapsed');
+        //         button.classList.add('expanded');
+        //     } else {
+        //         // Collapse
+        //         detailsSection.classList.add('hidden');
+        //         chevron.classList.remove('rotated');
+        //         button.classList.remove('expanded');
+        //         button.classList.add('collapsed');
+        //     }
+        // }
 
         // AJAX Pagination
         function loadPage(pageNum) {
@@ -940,17 +959,17 @@
             return videoCard;
         }
 
-        function getStatusBadgeClass(status) {
-            switch(status) {
-                case 'complete':
-                    return 'status-complete-badge';
-                case 'progress':
-                    return 'status-progress-badge';
-                case 'not-started':
-                default:
-                    return 'status-not-started-badge';
-            }
-        }
+        // function getStatusBadgeClass(status) {
+        //     switch(status) {
+        //         case 'complete':
+        //             return 'status-complete-badge';
+        //         case 'progress':
+        //             return 'status-progress-badge';
+        //         case 'not-started':
+        //         default:
+        //             return 'status-not-started-badge';
+        //     }
+        // }
 
         function getStatusText(status) {
             switch(status) {
@@ -981,7 +1000,7 @@
                 // Previous button
                 if (pagination.has_prev) {
                     controlsHTML += `
-                        <a href="javascript:void(0)" onclick="loadPage(${pagination.prev_page})" class="pagination-btn prev-btn">
+                        <a href="javascript:void(0)" onclick="loadTopicPage(${pagination.prev_page})" class="pagination-btn prev-btn">
                             <i class="fas fa-chevron-left"></i>
                             Previous
                         </a>
@@ -994,7 +1013,7 @@
                     if (i === pagination.current_page) {
                         controlsHTML += `<span class="page-number active">${i}</span>`;
                     } else {
-                        controlsHTML += `<a href="javascript:void(0)" onclick="loadPage(${i})" class="page-number">${i}</a>`;
+                        controlsHTML += `<a href="javascript:void(0)" onclick="loadTopicPage(${i})" class="page-number">${i}</a>`;
                     }
                 }
                 controlsHTML += '</div>';
@@ -1002,7 +1021,7 @@
                 // Next button
                 if (pagination.has_next) {
                     controlsHTML += `
-                        <a href="javascript:void(0)" onclick="loadPage(${pagination.next_page})" class="pagination-btn next-btn">
+                        <a href="javascript:void(0)" onclick="loadTopicPage(${pagination.next_page})" class="pagination-btn next-btn">
                             Next
                             <i class="fas fa-chevron-right"></i>
                         </a>
@@ -1030,6 +1049,288 @@
         //     });
         // });
     </script>
+     -->
+    <!-- topic wise and iframe -->
+    <script>
+        let currentTopic = null;
+        let expandedVideo = null;
     
+        // Function to toggle video details
+        function toggleExpand(videoId) {
+            const detailsSection = document.getElementById(`details-${videoId}`);
+            const chevron = document.getElementById(`chevron-${videoId}`);
+            const button = detailsSection.previousElementSibling;
+    
+            if (expandedVideo === videoId) {
+                // Collapse current video
+                detailsSection.classList.add('hidden');
+                chevron.classList.remove('rotated');
+                button.classList.remove('expanded');
+                button.classList.add('collapsed');
+                expandedVideo = null;
+            } else {
+                // Collapse previously expanded video if any
+                if (expandedVideo !== null) {
+                    const prevDetails = document.getElementById(`details-${expandedVideo}`);
+                    const prevChevron = document.getElementById(`chevron-${expandedVideo}`);
+                    const prevButton = prevDetails.previousElementSibling;
+                    
+                    prevDetails.classList.add('hidden');
+                    prevChevron.classList.remove('rotated');
+                    prevButton.classList.remove('expanded');
+                    prevButton.classList.add('collapsed');
+                }
+    
+                // Expand current video
+                detailsSection.classList.remove('hidden');
+                chevron.classList.add('rotated');
+                button.classList.remove('collapsed');
+                button.classList.add('expanded');
+                expandedVideo = videoId;
+            }
+        }
+    
+        // Function to load videos for a specific topic
+        function loadTopicVideos(topicId, topicName) {
+            currentTopic = topicId;
+            
+            // Update URL without page refresh
+            const newUrl = `${window.location.pathname}?topic=${encodeURIComponent(topicId)}`;
+            window.history.pushState({topic: topicId}, '', newUrl);
+            
+            // Update page title
+            const titleElement = document.getElementById('current-topic-title');
+            if (titleElement) {
+                titleElement.textContent = topicName;
+            }
+            
+            // Update active topic in sidebar
+            document.querySelectorAll('.sidebar .topic-link').forEach(link => {
+                link.classList.remove('active-topic');
+                const indicator = link.querySelector('.status-indicator');
+                if (indicator) {
+                    indicator.remove();
+                }
+            });
+            
+            // Add active class to clicked topic
+            const clickedLink = event.target;
+            clickedLink.classList.add('active-topic');
+            clickedLink.innerHTML += '<span class="status-indicator status-progress"></span>';
+            
+            // Load videos for the selected topic
+            loadTopicPage(1);
+        }
+    
+        // Function to load a specific page of videos for the current topic
+        function loadTopicPage(pageNum) {
+            if (!currentTopic) {
+                console.warn('No topic selected');
+                return;
+            }
+    
+            const container = document.getElementById('video-container');
+            if (container) {
+                container.style.opacity = '0.5';
+            }
+    
+            // Show loading state
+            container.innerHTML = '<p class="text-center py-8">Loading videos...</p>';
+            
+            // Make API call to get videos for the topic
+            fetch(`/api/videos?topic=${encodeURIComponent(currentTopic)}&page=${pageNum}`)
+                .then(response => response.json())
+                .then(data => {
+                    updateVideoContainer(data.videos);
+                    updatePagination(data.pagination);
+                    if (container) {
+                        container.style.opacity = '1';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading videos:', error);
+                    container.innerHTML = '<p class="text-red-500 text-center py-8">Error loading videos. Please try again.</p>';
+                    if (container) {
+                        container.style.opacity = '1';
+                    }
+                });
+        }
+    
+        // Function to create video card
+        function createVideoCard(video) {
+            const videoId = getYouTubeVideoId(video.youtubeLink);
+            if (!videoId) {
+                console.error('Invalid YouTube URL:', video.youtubeLink);
+                return null;
+            }
+    
+            const card = document.createElement('div');
+            card.className = 'video-card';
+            card.id = `video-${video.id}`;
+            
+            card.innerHTML = `
+                <div class="video-iframe-container">
+                    <iframe 
+                        src="https://www.youtube.com/embed/${videoId}"
+                        title="${video.title || 'Video'}"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                    </iframe>
+                </div>
+                <div class="video-content">
+                    <h3 class="video-title">${video.title || 'Untitled Video'}</h3>
+                    <div class="video-description">
+                        <p>${video.description || 'No description available.'}</p>
+                    </div>
+                    <button class="expand-button collapsed" onclick="toggleExpand(${video.id})">
+                        <span>Resources & Links</span>
+                        <i class="fas fa-chevron-down chevron" id="chevron-${video.id}"></i>
+                    </button>
+                    <div class="details-section hidden" id="details-${video.id}">
+                        <div class="details-grid">
+                            ${video.materials ? `
+                                <div class="materials-section">
+                                    <h4>Materials</h4>
+                                    <ul class="materials-list">
+                                        ${video.materials.map(material => `
+                                            <li>
+                                                <a href="${material.url}" target="_blank" rel="noopener noreferrer">
+                                                    <i class="fas ${getMaterialIcon(material.type)}"></i>
+                                                    ${material.title}
+                                                </a>
+                                            </li>
+                                        `).join('')}
+                                    </ul>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+    
+        // Helper function to get YouTube video ID
+        function getYouTubeVideoId(url) {
+            if (!url) return null;
+            
+            try {
+                const urlObj = new URL(url);
+                if (urlObj.hostname.includes('youtu.be')) {
+                    return urlObj.pathname.slice(1);
+                }
+                if (urlObj.hostname.includes('youtube.com')) {
+                    return urlObj.searchParams.get('v');
+                }
+            } catch (e) {
+                console.error('Error parsing YouTube URL:', e);
+            }
+            return null;
+        }
+    
+        // Helper function to get material icon
+        function getMaterialIcon(type) {
+            switch (type?.toLowerCase()) {
+                case 'pdf':
+                    return 'fa-file-pdf';
+                case 'code':
+                    return 'fa-code';
+                case 'link':
+                    return 'fa-link';
+                case 'dataset':
+                    return 'fa-database';
+                default:
+                    return 'fa-file';
+            }
+        }
+    
+        // Function to update video container
+        function updateVideoContainer(videos) {
+            const container = document.getElementById('video-container');
+            if (!container) return;
+    
+            container.innerHTML = '';
+            
+            if (Array.isArray(videos) && videos.length > 0) {
+                videos.forEach(video => {
+                    const videoCard = createVideoCard(video);
+                    if (videoCard) {
+                        container.appendChild(videoCard);
+                    }
+                });
+            } else {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">No videos available for this topic.</p>';
+            }
+        }
+    
+        // Function to update pagination
+        function updatePagination(pagination) {
+            const paginationContainer = document.querySelector('.pagination-container');
+            const paginationInfo = document.querySelector('.pagination-info p');
+            const paginationControls = document.querySelector('.pagination-controls');
+    
+            if (!pagination || !paginationContainer || !paginationInfo || !paginationControls) {
+                paginationContainer.style.display = 'none';
+                return;
+            }
+    
+            paginationContainer.style.display = 'block';
+            
+            // Update info text
+            const start = (pagination.current_page - 1) * pagination.per_page + 1;
+            const end = Math.min(start + pagination.per_page - 1, pagination.total);
+            paginationInfo.textContent = `Showing ${start} to ${end} of ${pagination.total} videos`;
+    
+            // Update controls
+            let controlsHTML = '';
+            
+            if (pagination.has_prev) {
+                controlsHTML += `
+                    <button onclick="loadTopicPage(${pagination.current_page - 1})" class="pagination-btn prev-btn">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                `;
+            }
+    
+            controlsHTML += '<div class="page-numbers">';
+            for (let i = 1; i <= pagination.total_pages; i++) {
+                if (i === pagination.current_page) {
+                    controlsHTML += `<span class="page-number active">${i}</span>`;
+                } else {
+                    controlsHTML += `
+                        <button onclick="loadTopicPage(${i})" class="page-number">${i}</button>
+                    `;
+                }
+            }
+            controlsHTML += '</div>';
+    
+            if (pagination.has_next) {
+                controlsHTML += `
+                    <button onclick="loadTopicPage(${pagination.current_page + 1})" class="pagination-btn next-btn">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                `;
+            }
+    
+            paginationControls.innerHTML = controlsHTML;
+        }
+    
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const topicId = urlParams.get('topic');
+            
+            if (topicId) {
+                const topicLink = document.querySelector(`.topic-link[data-topic-id="${topicId}"]`);
+                if (topicLink) {
+                    const topicName = topicLink.textContent.trim();
+                    loadTopicVideos(topicId, topicName);
+                }
+            }
+        });
+    </script>
+
 </body>
 </html>
