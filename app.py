@@ -1,7 +1,7 @@
 from flask import Flask, render_template,request,jsonify
 import math
-from ml_course import ML_VIDEO_DATA
-from python_course import PY_VIDEO_DATA
+from ml_course import ML_VIDEO_DATA, ML_SIDEBAR_TOPICS
+from python_course import PY_VIDEO_DATA,SIDEBAR_TOPICS
 app = Flask(__name__)
 
 # machine learning
@@ -10,35 +10,35 @@ app = Flask(__name__)
 def home():
     return render_template("home.html")
 
-
-@app.route("/python",methods=["GET"])
+@app.route("/python", methods=["GET"])
 def python():
-    # Sidebar navigation data
-    SIDEBAR_TOPICS = [
-        {'name': 'Python Basics & Setup', 'video_id': 1, 'status': 'complete'},
-        {'name': 'Variables & Data Types', 'video_id': 2, 'status': 'complete'},
-        {'name': 'Control Structures', 'video_id': 3, 'status': 'progress'},
-        {'name': 'Functions & Modules', 'video_id': 4, 'status': 'not-started'},
-        {'name': 'Object-Oriented Programming', 'video_id': 5, 'status': 'not-started'},
-        {'name': 'File Handling & I/O', 'video_id': 6, 'status': 'not-started'},
-        {'name': 'Exception Handling', 'video_id': 7, 'status': 'not-started'},
-        {'name': 'Libraries & Frameworks', 'video_id': 8, 'status': 'not-started'},
-        {'name': 'Web Development with Flask', 'video_id': 9, 'status': 'not-started'},
-        {'name': 'Data Science with Python', 'video_id': 10, 'status': 'not-started'},
-        {'name': 'API Development', 'video_id': 11, 'status': 'not-started'},
-        {'name': 'Testing in Python', 'video_id': 12, 'status': 'not-started'},
-    ]
+    # Get selected topic from URL parameter, default to first topic
+    selected_topic = request.args.get('topic', SIDEBAR_TOPICS[0])
     page = request.args.get('page', 1, type=int)
     per_page = 5  # Number of videos per page
     
-    # Calculate pagination
-    total_videos = len(PY_VIDEO_DATA)
-    total_pages = math.ceil(total_videos / per_page)
+    # Get videos for the selected topic
+    topic_videos = PY_VIDEO_DATA.get(selected_topic, [])
+    
+    # Calculate pagination for selected topic
+    total_videos = len(topic_videos)
+    total_pages = math.ceil(total_videos / per_page) if total_videos > 0 else 1
     start_index = (page - 1) * per_page
     end_index = start_index + per_page
     
-    # Get videos for current page
-    videos = PY_VIDEO_DATA[start_index:end_index]
+    # Get videos for current page of selected topic
+    videos = topic_videos[start_index:end_index]
+    
+    # Create sidebar topics with status indicators
+    sidebar_topics_with_status = []
+    for topic in SIDEBAR_TOPICS:
+        topic_data = {
+            'name': topic,
+            'video_count': len(PY_VIDEO_DATA.get(topic, [])),
+            'is_active': topic == selected_topic,
+            'url_param': topic.replace(' ', '%20')  # URL encode spaces
+        }
+        sidebar_topics_with_status.append(topic_data)
     
     # Pagination info
     pagination = {
@@ -53,25 +53,25 @@ def python():
     
     return render_template('python.html', 
                            videos=videos, 
-                           sidebar_topics=SIDEBAR_TOPICS,
-                           pagination=pagination)
-    # return render_template("python.html")
+                           sidebar_topics=sidebar_topics_with_status,
+                           pagination=pagination,
+                           selected_topic=selected_topic)
 
-@app.route('/load_more_videos')
+# AJAX route for loading more videos within a topic
+@app.route("/load_more_videos", methods=["GET"])
 def load_more_videos():
+    selected_topic = request.args.get('topic', SIDEBAR_TOPICS[0])
     page = request.args.get('page', 1, type=int)
-    per_page = 3
+    per_page = 5
     
-    # Calculate pagination
-    total_videos = len(PY_VIDEO_DATA)
-    total_pages = math.ceil(total_videos / per_page)
+    topic_videos = PY_VIDEO_DATA.get(selected_topic, [])
+    total_videos = len(topic_videos)
+    total_pages = math.ceil(total_videos / per_page) if total_videos > 0 else 1
     start_index = (page - 1) * per_page
     end_index = start_index + per_page
     
-    # Get videos for current page
-    videos = PY_VIDEO_DATA[start_index:end_index]
+    videos = topic_videos[start_index:end_index]
     
-    # Pagination info
     pagination = {
         'current_page': page,
         'total_pages': total_pages,
@@ -87,29 +87,35 @@ def load_more_videos():
         'pagination': pagination
     })
 
-@app.route("/machinlearning",methods = ['GET'])
-def mlcourse():
-    # Sidebar navigation data for ML course
-    ML_SIDEBAR_TOPICS = [
-        {'name': 'Introduction to ML', 'video_id': 1, 'status': 'complete'},
-        {'name': 'Supervised Learning', 'video_id': 2, 'status': 'complete'},
-        {'name': 'Unsupervised Learning', 'video_id': 3, 'status': 'progress'},
-        {'name': 'Neural Networks', 'video_id': 4, 'status': 'not-started'},
-        {'name': 'Deep Learning', 'video_id': 5, 'status': 'not-started'},
-        {'name': 'Reinforcement Learning', 'video_id': 6, 'status': 'not-started'},
-        {'name': 'Model Evaluation', 'video_id': 7, 'status': 'not-started'},
-        {'name': 'Feature Engineering', 'video_id': 8, 'status': 'not-started'},
-    ]
 
+# Updated ML route to handle topic-based filtering
+@app.route("/machinlearning", methods=['GET'])
+def mlcourse():
+    # Get selected topic from query parameter, default to first topic
+    selected_topic = request.args.get('topic', ML_SIDEBAR_TOPICS[0])
     page = request.args.get('page', 1, type=int)
     per_page = 5  # Videos per page
-
-    total_videos = len(ML_VIDEO_DATA)
-    total_pages = math.ceil(total_videos / per_page)
+    
+    # Get videos for the selected topic
+    topic_videos = ML_VIDEO_DATA.get(selected_topic, [])
+    total_videos = len(topic_videos)
+    total_pages = math.ceil(total_videos / per_page) if total_videos > 0 else 1
+    
     start_index = (page - 1) * per_page
     end_index = start_index + per_page
-    videos = ML_VIDEO_DATA[start_index:end_index]
-
+    videos = topic_videos[start_index:end_index]
+    
+    # Create sidebar topics with status indicators
+    sidebar_topics_with_status = []
+    for topic in ML_SIDEBAR_TOPICS:
+        topic_data = {
+            'name': topic,
+            'video_count': len(ML_VIDEO_DATA.get(topic, [])),
+            'is_active': topic == selected_topic,
+            'url_param': topic.replace(' ', '%20')  # URL encode spaces
+        }
+        sidebar_topics_with_status.append(topic_data)
+    
     pagination = {
         'current_page': page,
         'total_pages': total_pages,
@@ -119,23 +125,28 @@ def mlcourse():
         'next_page': page + 1 if page < total_pages else None,
         'total_videos': total_videos
     }
-
+    
     return render_template('machinlearning.html',
                            videos=videos,
-                           sidebar_topics=ML_SIDEBAR_TOPICS,
+                           sidebar_topics=sidebar_topics_with_status,
+                           selected_topic=selected_topic,
                            pagination=pagination)
 
-# Optional: API endpoint for loading more videos asynchronously
+# Updated AJAX route for topic-based loading
 @app.route('/load_more_ml_videos')
 def load_more_ml_videos():
+    selected_topic = request.args.get('topic', ML_SIDEBAR_TOPICS[0])
     page = request.args.get('page', 1, type=int)
-    per_page = 5  # Or whatever number for load more
+    per_page = 5
 
-    total_videos = len(ML_VIDEO_DATA)
-    total_pages = math.ceil(total_videos / per_page)
+    # Get videos for the selected topic
+    topic_videos = ML_VIDEO_DATA.get(selected_topic, [])
+    total_videos = len(topic_videos)
+    total_pages = math.ceil(total_videos / per_page) if total_videos > 0 else 1
+    
     start_index = (page - 1) * per_page
     end_index = start_index + per_page
-    videos = ML_VIDEO_DATA[start_index:end_index]
+    videos = topic_videos[start_index:end_index]
 
     pagination = {
         'current_page': page,
@@ -263,4 +274,4 @@ def team():
                          support_pillars=support_pillars)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(port=3000,debug=True)
